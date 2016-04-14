@@ -11,6 +11,7 @@ This work was also inspired by "Flattening NTRU for Evaluation Key Free Homomorp
 be found at https://eprint.iacr.org/2016/315.pdf.
 
 System requirements :
+
 1. [NTL](http://www.shoup.net/ntl/): A Library for doing Number Theory 9.5.0 (requires C++11) NOTE: to avoid random crashes compile it running
 ./configure NTL_EXCEPTIONS=o linked with
 
