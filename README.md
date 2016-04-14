@@ -10,6 +10,15 @@ of the later paper.
 This work was also inspired by "Flattening NTRU for Evaluation Key Free Homomorphic Encryption", by Doroz and Sunar, which can
 be found at https://eprint.iacr.org/2016/315.pdf.
 
+Unfortunately, this proposal does suffer from the same impractically issues as does the original DGHV scheme, namely a very big size of
+the public key. Althought the flat-DGHV is slower than original DGHV, it enhance the maximum multiplication depth of an evaluated circuit.
+At the same time, one of the improvements this hybrid scheme brings is lack of ciphertext expansion. After every operation (multiplication 
+or addition), the ciphertext is reduced modulo $x_0$, as indicated in paper https://eprint.iacr.org/2013/340.pdf, Apendix C.2 Approximate GCD,
+pag. 25 and so, the ciphertext has a constant size : a matrix l x l , where  $l = log x_0 + 1$. 
+
+We DO NOT RECOMMEND the use of this code as it it might contain many security problems, due to poor understanding of homomorphic encryption
+building blocks or due to bad programming. 
+
 System requirements :
 
 1. [NTL](http://www.shoup.net/ntl/): A Library for doing Number Theory 9.5.0 (requires C++11) NOTE: to avoid random crashes compile it running
