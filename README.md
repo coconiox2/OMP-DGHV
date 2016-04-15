@@ -26,7 +26,7 @@ System requirements :
 
 2. [gmp library version gmp-6.1.0.](https://gmplib.org/)
 
-3. [openmp 3.0](http://openmp.org/wp/), if speedup is desired and the hardware system is able to support multithreading.
+3. [openmp 4.0](http://openmp.org/wp/), if speedup is desired and the hardware system is able to support multithreading.
 The code works without openmp, but it is slower :).
 
-4. a compiler with support for [c++11](https://en.wikipedia.org/wiki/C%2B%2B11)
+4. a compiler with support for [c++11](https://en.wikipedia.org/wiki/C%2B%2B11), for example g++ version 4.9.2 or higher
