@@ -71,9 +71,9 @@ class Flat_DGHV
 
 	void	compute_FDGHV_settings();
 
-	ZZ		encrypt_DGHV(int message)const;
+	// ZZ		encrypt_DGHV(int message)const;
 
-	int		decrypt_DGHV(ZZ &ctxt)const;
+	// int		decrypt_DGHV(ZZ &ctxt)const;
 
 	Vec_ZZ	bitdecomp(Vec_ZZ &C_i)const;		// BitDecomp(a) = {a_0, a_1, ..., a_n} , a = a_0 + 2*a_1+... +2^(n)*n
 
@@ -166,6 +166,14 @@ public:
 	int		omp_decrypt(Mat_ZZ &C)const;
 	// Vec_ZZ	omp_bitdecomp(Vec_ZZ &C_i)const;		
 	// Vec_ZZ	omp_bitdecomp_1(Vec_ZZ &C_i)const;		
-	Mat_ZZ	omp_flatten(Mat_ZZ &C)const;
+    
+    
+    
+    /*
+    @brief test purpose only
+    */
+    ZZ		encrypt_DGHV(int message)const;
+
+	int		decrypt_DGHV(ZZ &ctxt)const;
 };
 

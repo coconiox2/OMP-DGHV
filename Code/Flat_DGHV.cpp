@@ -258,28 +258,25 @@ Mat_ZZ Flat_DGHV::hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const
 	assert(C1[0].size() == l);
 
 	Mat_ZZ C_mult(l);
-
 	Mat_ZZ C1_prim(l);
+    
 	for (int i = 0; i < l; i++)
 	{
-		Vec_ZZ vec = bitdecomp_1(C1[i]);
-		C1_prim.push_back(vec);
-	}
+        C1_prim[i] = bitdecomp_1(C1[i]);
+    }
 
-	ZZ z;
 	for (int i = 0; i < l; i++)
 	{
 		ZZ elem(0);
 		
 		for (int j = 0; j < l; j++)
 		{
-			elem += C2[i][j] * C1[j][0];
+			elem += C2[i][j] * C1_prim[j][0];
 		}
 
 		Vec_ZZ linie;
 		linie.push_back(elem);
-		linie = bitdecomp(linie);
-		C_mult.push_back(linie);
+        C_mult[i] = bitdecomp(linie);;
 	}
 
 	return (C_mult);
@@ -297,18 +294,19 @@ Mat_ZZ Flat_DGHV::omp_hom_add(Mat_ZZ &C1, Mat_ZZ &C2)const
 
 	Mat_ZZ C_add(l);
 	LL i, j;
-
-#pragma omp parallel for shared(C_add) private(i)
+    
+#pragma omp parallel for collapse(2) \
+    default(none) shared(C_add, C1, C2) private(i)
 	for (i = 0; i < l; i++)
 	{
-	#pragma omp parallel for shared(C_add) private(j)
 		for (j = 0; j < l; j++)
 		{
 			C_add[i].push_back(C1[i][j] + C2[i][j]);
 		}
-	}
-
-	return omp_flatten(C_add);
+    }
+    
+    return flatten(C_add);
+    
 #else
 	return hom_add(C1, C2);
 #endif
@@ -327,25 +325,26 @@ Mat_ZZ Flat_DGHV::omp_hom_mult(Mat_ZZ &C1, Mat_ZZ &C2)const
 	LL i, j, k;
 	ZZ elem;
 
-#pragma omp parallel for \
+#pragma omp parallel for collapse(2) \
 	default(none) shared(C_mult, C1, C2) private(i, j, k, elem) 
-
 		for (i = 0; i<l; i++)
 		{
+            //#pragma omp parallel for collapse(2) \
+	            default(none) shared(C_mult, C1, C2) \
+                private(i, j, k, elem) 
 			for (j = 0; j<l; j++)
 			{
 				elem = 0;
 				for (k = 0; k<l; k++)
 				{
 					elem += C1[i][k] * C2[k][j];
-				}
-
-				C_mult[i].push_back( elem);
+                    //C_mult[i][j] += C1[i][k] * C2[k][j];
+                }	
+                C_mult[i].push_back(elem);			
 			}
 		}
 
-		return omp_flatten(C_mult);
-		// return flatten(C_mult);
+	return flatten(C_mult);
 #else
 	return hom_mult(C1, C2);
 #endif
@@ -362,30 +361,29 @@ Mat_ZZ Flat_DGHV::omp_hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const
 	assert(C1[0].size() == l);
 
 	Mat_ZZ C_mult(l);
+    Mat_ZZ C1_prim(l);
 	LL i, j, k;
-
-	Mat_ZZ C1_prim(l);
-
-#pragma omp parallel for shared(C1_prim, C1) private(i)
+    
 	for (i = 0; i < l; i++)
 	{
 		C1_prim[i] = bitdecomp_1(C1[i]);
+        C_mult[i].push_back( ZZ(0) );
 	}
-
-#pragma omp parallel for shared(C_mult, C1, C2) private(i)
-	for (int i = 0; i < l; i++)
+    
+    //#pragma omp parallel for  \
+        default(none) shared(C_mult, C1_prim, C2) private(i,j)
+    for (i = 0; i < l; i++)
 	{
-		ZZ elem(0);
-
-		for (int j = 0; j < l; j++)
+		for (j = 0; j < l; j++)
 		{
-			elem += C2[i][j] * C1[j][0];
+            C_mult[i][0] += C2[i][j] * C1_prim[j][0];
 		}
-
-		Vec_ZZ linie;
-		linie.push_back(elem);
-		C_mult[i] = bitdecomp(linie);
-	}
+	//}
+    
+    //for (i = 0; i < l; i++)
+	//{
+        C_mult[i] = bitdecomp(C_mult[i]);
+    }
 
 	return C_mult;
 
@@ -409,7 +407,7 @@ Mat_ZZ Flat_DGHV::omp_encrypt(int message)const
 		C[i][i] += message;
 	}
 
-	return omp_flatten(C);
+	return flatten(C);
 
 #else
 	return encrypt(message);
@@ -436,47 +434,39 @@ int Flat_DGHV::omp_decrypt(Mat_ZZ &C)const
 	
 }
 
-Mat_ZZ Flat_DGHV::omp_flatten(Mat_ZZ &C)const
-{
-	Mat_ZZ Flat_C = C;
-	Vec_ZZ bd_1;
-	LL i;
-
-// #pragma omp parallel for shared(Flat_C) private(i, bd_1)
-	for (i = 0; i < C.size(); i++)
-	{
-		bd_1 = bitdecomp_1(C[i]);
-		bd_1[0] = bd_1[0] % pk_DGHV[0];
-		Flat_C[i] = bitdecomp(bd_1);
-	}
-
-	return Flat_C;
-}
 
 /*Vec_ZZ Flat_DGHV::omp_bitdecomp(Vec_ZZ &C_i)const
 {
+    
 #if defined(_OPENMP)
-
 	long length = C_i.size() * l;
 	Vec_ZZ C_decomp(length);
 	ZZ elem;
-	int i, j;
+	LL i;
+    LL j = -1;
         
-	for (i = 0, j = -1; i < length; i++)
+#pragma omp parallel for shared(C_decomp, C_i, j) private(elem, i)
+	for (i = 0; i < length; i++)
 	{
-		if (i % l == 0)
-		{
-			j++;
-			elem = C_i[j];
-		}
-
-		C_decomp[i] = ZZ(elem % 2);
+		
+        #pragma omp critical
+        {
+            if (i % l == 0)
+            {
+                j++;
+                elem = C_i[j];
+            }
+            C_decomp[i] = ZZ(elem % 2);
+        }
+		
 		elem = elem / 2;
 	}
+    
 	return C_decomp;
-#elif
+#else
 	return bitdecomp(C_i);
 #endif
+
 }
 
 Vec_ZZ Flat_DGHV::omp_bitdecomp_1(Vec_ZZ &C_i)const
@@ -487,7 +477,7 @@ Vec_ZZ Flat_DGHV::omp_bitdecomp_1(Vec_ZZ &C_i)const
 	ZZ pow_of_two(1);
 	ZZ two(2);
 	UL i, j;
-// #pragma omp parallel for shared(C_decomp_1) private(i,j)
+#pragma omp parallel for shared(C_decomp_1) private(i,j)
 	for (i = 0, j = -1; i < C_i.size(); i++)
 	{
 		if (i % l == 0)
@@ -502,7 +492,7 @@ Vec_ZZ Flat_DGHV::omp_bitdecomp_1(Vec_ZZ &C_i)const
 	}
 
 	return C_decomp_1;
-#elif
+#else
 	return omp_bitdecomp_1(C_i);
 #endif
 
