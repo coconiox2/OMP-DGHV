@@ -21,7 +21,7 @@
 // #define SEC_PARAM 62		// medium 
 // #define SEC_PARAM 72		// large
 
-#define SEC_PARAM 100
+#define SEC_PARAM 50
 #define NR_TESTE 400
 #define MULT_DEPTH 50
 
@@ -175,8 +175,6 @@ void test_Flat_DGHV_simple()
 
 int main()
 {
-	cout << " bitset pentru matricile GSW\n\n";
-	
 	test_Flat_DGHV_simple();
 
 	return 0;
