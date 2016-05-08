@@ -193,7 +193,7 @@ Mat_ZZ Flat_DGHV::encrypt(int message)const
 	return C;
 }
 
-int Flat_DGHV::decrypt(Mat_ZZ &C)const
+int Flat_DGHV::decrypt(const Mat_ZZ &C)const
 {
 	ZZ message(0);
 	for (int i = 0; i < l; i++)
@@ -352,7 +352,12 @@ Mat_ZZ Flat_DGHV::omp_hom_mult(Mat_ZZ &C1, Mat_ZZ &C2)const
 	
 }
 
-Mat_ZZ Flat_DGHV::omp_hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const
+/*
+metoda abandonata deoarece nu este mai buna decat omp_hom_mult
+pentru o paralelizare mai buna trebuie modificat algoritmul
+de multiplicare combinat cu Flattening-ul
+*/
+/*Mat_ZZ Flat_DGHV::omp_hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const
 {
 #if defined(_OPENMP)
 
@@ -390,7 +395,7 @@ Mat_ZZ Flat_DGHV::omp_hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const
 #else
 	return hom_mult_opt(C1, C2);
 #endif
-}
+}*/
 
 Mat_ZZ Flat_DGHV::omp_encrypt(int message)const
 {

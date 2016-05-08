@@ -117,7 +117,7 @@ public:
 	@param ref in C - ciphertext-ul care va fi decriptat
 	@return valoarea intreaga obtinuta in urma decriptarii
 	*/
-	int		decrypt(Mat_ZZ &C)const;
+	int		decrypt(const Mat_ZZ &C)const;
 
 	/*
 	@brief adunare homomorfica a doua ciphertext-uri
@@ -161,7 +161,7 @@ public:
 	*/
 	Mat_ZZ	omp_hom_mult(Mat_ZZ &C1, Mat_ZZ &C2)const;
 	Mat_ZZ	omp_hom_add(Mat_ZZ &C1, Mat_ZZ &C2)const;;
-	Mat_ZZ  omp_hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const;
+	// Mat_ZZ  omp_hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const;
 	Mat_ZZ	omp_encrypt(int message)const;
 	int		omp_decrypt(Mat_ZZ &C)const;
 	// Vec_ZZ	omp_bitdecomp(Vec_ZZ &C_i)const;		
