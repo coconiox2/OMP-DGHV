@@ -16,6 +16,11 @@ typedef vector<ZZ> Vec_ZZ;
 class Flat_DGHV
 {
 	/*
+	baza in care se va face descompunerea // default 2
+	*/
+	ZZ w; 
+
+	/*
 	@field vectorul cheie secreta v = Powersof2(1)
 	*/
 	Vec_ZZ v;
@@ -103,7 +108,7 @@ public:
 		cu acest constructor se genereaza parametri si chei noi
 		iar aceste valori nu se salveaza intr-un fisier
 	*/
-	Flat_DGHV(int lambda);
+	Flat_DGHV(int lambda, ZZ baza = ZZ(2) );
 
 	/*
 	@brief criptare a unui mesaj intreg cu schema Flat_DGHV
@@ -117,7 +122,7 @@ public:
 	@param ref in C - ciphertext-ul care va fi decriptat
 	@return valoarea intreaga obtinuta in urma decriptarii
 	*/
-	int		decrypt(Mat_ZZ &C)const;
+	ZZ		decrypt(Mat_ZZ &C)const;
 
 	/*
 	@brief adunare homomorfica a doua ciphertext-uri
@@ -174,6 +179,6 @@ public:
     */
     ZZ		encrypt_DGHV(int message)const;
 
-	int		decrypt_DGHV(ZZ &ctxt)const;
+	ZZ		decrypt_DGHV(ZZ &ctxt)const;
 };
 

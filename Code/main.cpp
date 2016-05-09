@@ -3,11 +3,15 @@
 # include <cmath>
 # include <ctime>
 # include <omp.h>
-
 #include "utilities.h"
-#include <time.h>
-#include <assert.h>
 #include "Flat_DGHV.h"
+
+// #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <assert.h>
+
 #include <fstream>
 #include <NTL/ZZ.h>
 
@@ -21,19 +25,19 @@
 // #define SEC_PARAM 62		// medium 
 // #define SEC_PARAM 72		// large
 
-#define SEC_PARAM 50
-#define NR_TESTE 400
-#define MULT_DEPTH 50
+#define SEC_PARAM 128
+#define NR_OPERATII 400
 
 using namespace std;
 
+ZZ *baza;
 
 vector<int> compute_random_circuit()
 {
-    vector<int> circuit(NR_TESTE);
+    vector<int> circuit(NR_OPERATII);
     
     srand(time(NULL));
-    for(int i=0; i<NR_TESTE; i++)
+    for(int i=0; i<NR_OPERATII; i++)
     {
         circuit[i] = rand() % 2 ;
     }
@@ -48,42 +52,35 @@ void test_Flat_DGHV_simple()
 
     // const char *source_file = "../Data/DGHVparams42.txt";
 	// Flat_DGHV fdghv(source_file);
-	Flat_DGHV fdghv(lambda);
+	baza = new ZZ(2);
+	Flat_DGHV fdghv(lambda, (*baza));
 
 	Mat_ZZ C1;
 	Mat_ZZ C2;
 	int m1;
 	int m2;
     double wtime = 0.0;
-
-	
-	// m1 = rand() % 2;
-	m1 = 1;
-	C1 = fdghv.encrypt(m1);
-
-	m2 = 1;
-	C2 = fdghv.encrypt(m2);
     
     cout << "\nTestare multiplicari ...\n\n";
-    
-    vector<int> circuit = compute_random_circuit();
 
 	for (int test = 0; test < 20; test++)
 	{
+		vector<int> circuit = compute_random_circuit();
+
         srand(time(NULL));
         
-		m1 = m2 = 1;
+		m1 = rand() % 2;
 		C1 = fdghv.encrypt(m1);
-		C2 = fdghv.encrypt(m2);
 
 #if defined(_OPENMP)
 		wtime = omp_get_wtime ( );
 #endif
-
-		for (int i = 0; i < NR_TESTE; i++)
+		int i = 0;
+		for (i = 0; i < NR_OPERATII; i++)
 		{
-			// m2 = rand() % 2;
-			// C2 = fdghv.encrypt(m2);
+			m2 = rand() % 2;
+			C2 = fdghv.encrypt(m2);
+
             if( circuit[i] == 1 )
             {
                 C1 = fdghv.hom_mult(C1, C2);
@@ -102,19 +99,16 @@ void test_Flat_DGHV_simple()
 				cout << "Max mult depth FDGHV i = " << i << endl;
 				break;
 			}
-			else
-			{
-				// m1 = (m1 + m2) % 2;
-				// m1 *= m2;
-				// cout << "Succes\n";
-			}
 
 		}
+		cout << "Depth = " << i << endl;
 
 #if defined(_OPENMP)
 		wtime = omp_get_wtime ( ) - wtime;
 #endif
         cout << "  TIME FARA OMP = " << wtime << "\n"; 
+
+		continue;
         
 		m1 = 1;
 		C1 = fdghv.encrypt(m1);
@@ -125,7 +119,7 @@ void test_Flat_DGHV_simple()
         wtime = omp_get_wtime ( );
 #endif
 
-		for (int i = 0; i < NR_TESTE; i++)
+		for (int i = 0; i < NR_OPERATII; i++)
 		{
 			// m2 = rand() % 2;
 			// C2 = fdghv.encrypt(m2);
@@ -169,14 +163,120 @@ void test_Flat_DGHV_simple()
 	}
 
 	cout << "Final test Flat_DGHV_simple\n";
+	delete baza;
+	baza = NULL;
 
 }
 
+void test_FDGHV_base_w()
+{
+	LARGE_INTEGER frequency;
+	LARGE_INTEGER start;
+	LARGE_INTEGER end;
+	double interval;
+
+	cout << "\nTestare Flat_DGHV_simple with base different from 2 ...\n\n";
+	int lambda = SEC_PARAM;
+
+	int w_baza = 16;
+
+	baza = new ZZ(w_baza);
+	Flat_DGHV fdghv(lambda, (*baza) );
+
+	Mat_ZZ C1;
+	Mat_ZZ C2;
+	int m1;
+	int m2;
+	double wtime = 0.0;
+	cout << "\nTestare operatii W = "<< *baza <<"  ...\n\n";
+
+	for (int test = 0; test < 20; test++)
+	{
+		vector<int> circuit = compute_random_circuit();
+
+		srand(time(NULL));
+
+		QueryPerformanceFrequency(&frequency);
+		QueryPerformanceCounter(&start);
+
+		m1 = rand() % w_baza;
+		C1 = fdghv.encrypt(m1);
+
+		int i;
+		for (i = 0; i < NR_OPERATII/3; i++)
+		{
+			m2 = rand() % w_baza;
+			C2 = fdghv.encrypt(m2);
+
+			if (circuit[i] == 1)
+			{
+				C1 = fdghv.hom_mult_opt(C1, C2);
+				m1 = (m1*m2) % w_baza;
+			}
+			else
+			{
+				C1 = fdghv.hom_add(C1, C2);
+				m1 = (m1 + m2) % w_baza;
+			}
+
+
+			if (fdghv.decrypt(C1) != m1)
+			{
+				cout << "Max mult depth FDGHV i = " << i << endl << endl;
+				break;
+			}
+		}
+
+		m2 = 15;
+		C2 = fdghv.encrypt(m2);
+
+		for (; i < NR_OPERATII/2; i++)
+		{
+			C1 = fdghv.hom_mult_opt(C1, C2);
+			m1 = (m1*m2) % w_baza;
+
+			if (fdghv.decrypt(C1) != m1)
+			{
+				cout << "Max mult depth FDGHV i = " << i << endl << endl;
+				break;
+			}
+		}
+
+		m2 = rand() % w_baza;
+		C2 = fdghv.encrypt(m2);
+
+		for (; i < NR_OPERATII; i++)
+		{
+			C1 = fdghv.hom_add(C1, C2);
+			m1 = (m1+m2) % w_baza;
+
+			if (fdghv.decrypt(C1) != m1)
+			{
+				cout << "Max mult depth FDGHV i = " << i << endl << endl;
+				break;
+			}
+		}
+
+		cout << "Depth = " << i << endl;
+
+		QueryPerformanceCounter(&end);
+		interval = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
+
+		printf("%f\n", interval);
+
+		// break;
+	}
+
+	cout << "Final test Flat_DGHV_simple with base different from 2 \n";
+	delete baza;
+	baza = NULL;
+}
 
 int main()
 {
-	test_Flat_DGHV_simple();
+	test_FDGHV_base_w();
+
+	// test_Flat_DGHV_simple();
 
 	return 0;
-
 }
