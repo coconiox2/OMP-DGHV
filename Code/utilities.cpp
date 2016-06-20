@@ -5,10 +5,13 @@
 #include <typeinfo>
 # include <omp.h>
 
+extern ZZ *baza;
+
 ZZ sample_r()
 {
 	ZZ r;
 	long ro_bound;
+	// ZZ doi( (*baza) );
 	ZZ doi(2);
 	ZZ doi_la_ro;
 
@@ -24,7 +27,7 @@ ZZ sample_r_for_encryption()
 {
 	ZZ r(0);
 	long ro_bound;
-	ZZ doi(2);
+	ZZ doi((*baza) );
 	ZZ doi_la_ro;
 
 	RandomBits(r, Params::getRoPrim() + 1); // r apartine[0, 2^(ro_prim+1) )
@@ -47,7 +50,8 @@ ZZ sample_integer(ZZ p)
 	r = sample_r();
 
 	// x = p*q+r;
-	x = p * q + 2 * r;
+	// x = p * q + 2 * r;
+	x = p * q + (*baza) * r;
 
 	return x;
 }
@@ -69,7 +73,7 @@ void generate_keys(ZZ &sk, vector<ZZ> &pk)
 		RandomBits(sk, Params::getEta()-1); // esantionam sk in [0, 2^(eta-1) ) 
 		sk = sk + doi_la_eta_1; // sk apartine [ 2^(eta-1), 2^eta )
 
-	} while (sk % 2 != 1);
+	} while (sk % (*baza) != 1);
 
 	// ofstream out("gen.log", ios::out);
 
@@ -90,7 +94,7 @@ void generate_keys(ZZ &sk, vector<ZZ> &pk)
             // sample public key x_i's
                 
             #if defined(_OPENMP)
-            #pragma omp parallel for shared(pk, sk, tau) private(i) \
+            // #pragma omp parallel for shared(pk, sk, tau) private(i) \
                        schedule(static,1) num_threads(nt)
             for (i = 0; i < tau; i++)
             {
@@ -120,7 +124,7 @@ void generate_keys(ZZ &sk, vector<ZZ> &pk)
         // x_0 - odd
         // r_p(x_0) - even
 
-   } while ( ( pk[0] % 2 != 1 ) && (( pk[0] % sk ) % 2 != 0 ) );
+   } while ( ( pk[0] % (*baza) != 1 ) && (( pk[0] % sk ) % (*baza) != 0 ) );
 
 	// cout << "pk.size = " << pk.size() << endl;
 	// cout << "tau = " << Params::getTau() << endl;
@@ -217,7 +221,7 @@ ZZ encrypt_integer(vector<ZZ> pk, ZZ m)
 	}
 
 	// c = c*2+2*r+m;
-	c = c + 2 * r + m;
+	c = c + (*baza) * r + m;
 
 	c = c % pk[0]; // c = [ 2*SparseSubsetSum + 2*r + m] modulo x_0
 
@@ -227,7 +231,7 @@ ZZ encrypt_integer(vector<ZZ> pk, ZZ m)
 ZZ decrypt_ciphertext(ZZ ctxt, ZZ sk)
 {
 	ZZ miu;
-	miu = ( ctxt % sk ) % 2;
+	miu = ( ctxt % sk ) % (*baza);
 	return miu;
 }
 

@@ -1,0 +1,5 @@
+
+security_bits = 0xbfa18308
+int_size = 8
+N = 100
+baza = 2

@@ -31,7 +31,10 @@ void HE_Integer::encryptIntValue(vector<Mat_ZZ>& vct, int val)
 
 int	HE_Integer::decryptBit(const Mat_ZZ &ct)
 {
-	return he_context.decrypt(ct);
+	const ZZ miu = he_context.decrypt(ct);
+    int val;
+    conv(val, miu);
+    return val;
 }
 
 int HE_Integer::decryptIntValue(const vector<Mat_ZZ>& vct)
@@ -41,7 +44,7 @@ int HE_Integer::decryptIntValue(const vector<Mat_ZZ>& vct)
 
 	for (int i = 0; i < vct.size(); i++)
 	{
-		value += power_of_two * he_context.decrypt(vct[i]);
+		value += power_of_two * decryptBit(vct[i]);
 		power_of_two *= 2;
 	}
 

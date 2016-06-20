@@ -1,0 +1,225 @@
+SEC = 112 	 BAZA = 2
+Time = 2.01 s
+Mults = 53 Adds = 47
+Circuit completed depth = 100
+
+Time = 20.02 s
+Mults = 530 Adds = 470
+Circuit completed depth = 1000
+
+Time = 194.39 s
+Mults = 4913 Adds = 5087
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 128 	 BAZA = 2
+Time = 2.59 s
+Mults = 46 Adds = 54
+Circuit completed depth = 100
+
+Time = 26.02 s
+Mults = 488 Adds = 512
+Circuit completed depth = 1000
+
+Time = 261.38 s
+Mults = 5077 Adds = 4923
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 140 	 BAZA = 2
+Time = 3.14 s
+Mults = 55 Adds = 45
+Circuit completed depth = 100
+
+Time = 32.14 s
+Mults = 498 Adds = 502
+Circuit completed depth = 1000
+
+Time = 321.88 s
+Mults = 4939 Adds = 5061
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 112 	 BAZA = 16
+Time = 0.16 s
+Mults = 50 Adds = 50
+Circuit completed depth = 100
+
+Time = 1.46 s
+Mults = 462 Adds = 538
+Circuit completed depth = 1000
+
+Time = 14.77 s
+Mults = 4977 Adds = 5023
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 128 	 BAZA = 16
+Time = 0.2 s
+Mults = 51 Adds = 49
+Circuit completed depth = 100
+
+Time = 1.97 s
+Mults = 515 Adds = 485
+Circuit completed depth = 1000
+
+Time = 19.67 s
+Mults = 5022 Adds = 4978
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 140 	 BAZA = 16
+Time = 0.24 s
+Mults = 55 Adds = 45
+Circuit completed depth = 100
+
+Time = 2.36 s
+Mults = 527 Adds = 473
+Circuit completed depth = 1000
+
+Time = 23.44 s
+Mults = 4947 Adds = 5053
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 112 	 BAZA = 128
+Time = 0.06 s
+Mults = 44 Adds = 56
+Circuit completed depth = 100
+
+Time = 0.56 s
+Mults = 505 Adds = 495
+Circuit completed depth = 1000
+
+Time = 5.66 s
+Mults = 5027 Adds = 4973
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 128 	 BAZA = 128
+Time = 0.07 s
+Mults = 54 Adds = 46
+Circuit completed depth = 100
+
+Time = 0.77 s
+Mults = 467 Adds = 533
+Circuit completed depth = 1000
+
+Time = 7.79 s
+Mults = 4980 Adds = 5020
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 140 	 BAZA = 128
+Time = 0.08 s
+Mults = 48 Adds = 52
+Circuit completed depth = 100
+
+Time = 0.87 s
+Mults = 494 Adds = 506
+Circuit completed depth = 1000
+
+Time = 8.67 s
+Mults = 4989 Adds = 5011
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 112 	 BAZA = 1024
+Time = 0.03 s
+Mults = 55 Adds = 45
+Circuit completed depth = 100
+
+Time = 0.36 s
+Mults = 533 Adds = 467
+Circuit completed depth = 1000
+
+Time = 3.53 s
+Mults = 5078 Adds = 4922
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 128 	 BAZA = 1024
+Time = 0.04 s
+Mults = 41 Adds = 59
+Circuit completed depth = 100
+
+Time = 0.41 s
+Mults = 504 Adds = 496
+Circuit completed depth = 1000
+
+Time = 4.06 s
+Mults = 4959 Adds = 5041
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 140 	 BAZA = 1024
+Time = 0.05 s
+Mults = 54 Adds = 46
+Circuit completed depth = 100
+
+Time = 0.47 s
+Mults = 533 Adds = 467
+Circuit completed depth = 1000
+
+Time = 4.66 s
+Mults = 4947 Adds = 5053
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 112 	 BAZA = 32678
+Time = 0.02 s
+Mults = 52 Adds = 48
+Circuit completed depth = 100
+
+Time = 0.19 s
+Mults = 515 Adds = 485
+Circuit completed depth = 1000
+
+Time = 1.89 s
+Mults = 4984 Adds = 5016
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 128 	 BAZA = 32678
+Time = 0.03 s
+Mults = 48 Adds = 52
+Circuit completed depth = 100
+
+Time = 0.22 s
+Mults = 487 Adds = 513
+Circuit completed depth = 1000
+
+Time = 2.32 s
+Mults = 5022 Adds = 4978
+Circuit completed depth = 10000
+
+***********************************************************
+
+SEC = 140 	 BAZA = 32678
+Time = 0.03 s
+Mults = 54 Adds = 46
+Circuit completed depth = 100
+
+Time = 0.27 s
+Mults = 522 Adds = 478
+Circuit completed depth = 1000
+
+Time = 2.76 s
+Mults = 4986 Adds = 5014
+Circuit completed depth = 10000
+
+***********************************************************
+

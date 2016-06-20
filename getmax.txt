@@ -1,0 +1,396 @@
+
+security_bits = 0xbf804428
+int_size = 32
+N = 10
+baza = 2
+Timp homomorphic : 75.77
+Timp plain : 0.04
+plain_max = 2054081597
+hom_max = 2054081597
+
+**********************************************************************
+
+
+security_bits = 0xbf804428
+int_size = 32
+N = 50
+baza = 2
+
+security_bits = 0xbf9c42d8
+int_size = 64
+N = 8
+baza = 2
+Timp homomorphic : 83.77
+Timp plain : 0.02
+plain_max = 1264353207
+hom_max = 1264353207
+
+**********************************************************************
+
+
+security_bits = 0xbf9c42d8
+int_size = 64
+N = 50
+baza = 2
+
+security_bits = 0xbffff1c8
+int_size = 64
+N = 8
+baza = 2
+Timp homomorphic : 83.29
+
+security_bits = 0xbffb39c8
+int_size = 64
+N = 50
+baza = 2
+Timp homomorphic : 80.16
+Timp plain : 0
+plain_max = 2086305950
+hom_max = 0
+
+**********************************************************************
+
+
+security_bits = 0xbffb39c8
+int_size = 64
+N = 16
+baza = 2
+
+security_bits = 0xbfe3b12c
+int_size = 8
+N = 4
+baza = 2
+Timp homomorphic : 9.24
+Timp plain : 0
+plain_max = 247
+hom_max = 247
+
+**********************************************************************
+
+
+security_bits = 0xbfe3b12c
+int_size = 8
+N = 16
+baza = 2
+Timp homomorphic : 46.49
+Timp plain : 0
+plain_max = 251
+hom_max = 251
+
+**********************************************************************
+
+
+security_bits = 0xbfe3b12c
+int_size = 8
+N = 8
+baza = 2
+Timp homomorphic : 21.73
+Timp plain : 0
+plain_max = 241
+hom_max = 241
+
+**********************************************************************
+
+
+security_bits = 0xbfe3b12c
+int_size = 8
+N = 162806696
+baza = 2
+
+security_bits = 0xbffc1468
+int_size = 8
+N = 4
+baza = 2
+
+security_bits = 0xbfc04e88
+int_size = 8
+N = 4
+baza = 2
+Timp homomorphic : 12.24
+Timp plain : 0
+plain_max = 241
+hom_max = 241
+
+**********************************************************************
+
+
+security_bits = 0xbfc04e88
+int_size = 8
+N = 10
+baza = 2
+Timp homomorphic : 36.78
+Timp plain : 0.01
+plain_max = 252
+hom_max = 252
+
+**********************************************************************
+
+
+security_bits = 0xbfc04e88
+int_size = 8
+N = 50
+baza = 2
+Timp homomorphic : 113.76
+Timp plain : 0
+plain_max = 238
+hom_max = 0
+
+**********************************************************************
+
+
+security_bits = 0xbfc04e88
+int_size = 16
+N = 4
+baza = 2
+Timp homomorphic : 29.13
+Timp plain : 0
+plain_max = 38089
+hom_max = 38089
+
+**********************************************************************
+
+
+security_bits = 0xbfc04e88
+int_size = 16
+N = 10
+baza = 2
+
+security_bits = 220
+int_size = 8
+N = 4
+baza = 2
+
+security_bits = 220
+int_size = 8
+N = 4
+baza = 2
+
+security_bits = 220
+int_size = 8
+N = 4
+baza = 2
+Timp homomorphic : 12.23
+Timp plain : 0
+plain_max = 137
+hom_max = 137
+
+**********************************************************************
+
+
+security_bits = 220
+int_size = 8
+N = 10
+baza = 2
+
+security_bits = 220
+int_size = 8
+N = 10
+baza = 2
+Timp homomorphic : 37.34
+Timp plain : 0
+plain_max = 242
+hom_max = 242
+
+**********************************************************************
+
+
+security_bits = 220
+int_size = 8
+N = 4
+baza = 2
+
+security_bits = 192
+int_size = 8
+N = 16
+baza = 2
+
+security_bits = 192
+int_size = 8
+N = 8
+baza = 2
+Timp homomorphic : 21.6
+plain_max = 224
+hom_max = 224
+
+**********************************************************************
+
+
+security_bits = 192
+int_size = 8
+N = 10
+baza = 2
+
+security_bits = 192
+int_size = 8
+N = 8
+baza = 2
+Timp homomorphic : 21.65
+plain_max = 253
+hom_max = 253
+
+**********************************************************************
+
+
+security_bits = 220
+int_size = 8
+N = 8
+baza = 2
+
+security_bits = 220
+int_size = 8
+N = 4
+baza = 2
+
+security_bits = 220
+int_size = 8
+N = 2
+baza = 2
+
+security_bits = 192
+int_size = 8
+N = 8
+baza = 2
+Timp homomorphic : 21.52
+plain_max = 252
+hom_max = 252
+
+**********************************************************************
+
+
+security_bits = 128
+int_size = 8
+N = 8
+baza = 2
+Timp homomorphic : 9.7
+plain_max = 242
+hom_max = 242
+
+**********************************************************************
+
+
+security_bits = 140
+int_size = 8
+N = 8
+baza = 2
+Timp homomorphic : 11.47
+plain_max = 248
+hom_max = 248
+
+**********************************************************************
+
+
+security_bits = 140
+int_size = 8
+N = 100
+baza = 2
+Timp homomorphic : 166.63
+plain_max = 249
+hom_max = 249
+
+**********************************************************************
+
+
+security_bits = 140
+int_size = 16
+N = 100
+baza = 2
+security_bits = 192
+int_size = 8
+N = 16
+baza = 2
+Timp homomorphic : 46.58
+plain_max = 238
+hom_max = 238
+
+**********************************************************************
+
+security_bits = 128
+int_size = 16
+N = 50
+baza = 2
+Timp homomorphic : 158.1
+plain_max = 64618
+hom_max = 64618
+
+**********************************************************************
+
+security_bits = 128
+int_size = 32
+N = 10
+baza = 2
+Timp homomorphic : 64.09
+plain_max = 2055654658
+hom_max = 2055654658
+
+**********************************************************************
+
+security_bits = 128
+int_size = 64
+N = 10
+baza = 2
+Timp homomorphic : 143.05
+plain_max = 2118029635
+hom_max = 2118029635
+
+**********************************************************************
+
+security_bits = 128
+int_size = 32
+N = 20
+baza = 2
+Timp homomorphic : 136.62
+plain_max = 2086653204
+hom_max = 2086653204
+
+**********************************************************************
+
+security_bits = 220
+int_size = 8
+N = 4
+baza = 2
+Timp homomorphic : 12.23
+plain_max = 244
+hom_max = 244
+
+**********************************************************************
+
+security_bits = 128
+int_size = 8
+N = 100
+baza = 2
+Timp homomorphic : 144.2
+plain_max = 254
+hom_max = 254
+
+**********************************************************************
+
+security_bits = 128
+int_size = 8
+N = 100
+baza = 2
+Timp homomorphic : 141.89
+plain_max = 254
+hom_max = 254
+
+**********************************************************************
+
+security_bits = 128
+int_size = 16
+N = 50
+baza = 2
+Timp homomorphic : 158.43
+plain_max = 63854
+hom_max = 63854
+
+**********************************************************************
+
+security_bits = 192
+int_size = 32
+N = 10
+baza = 2
+Timp homomorphic : 142.02
+plain_max = 1719297266
+hom_max = 1719297266
+
+**********************************************************************
+

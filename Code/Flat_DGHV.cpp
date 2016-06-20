@@ -3,8 +3,9 @@
 #include "utilities.h"
 #include <assert.h>
 
-Flat_DGHV::Flat_DGHV(int lambda)
+Flat_DGHV::Flat_DGHV(int lambda, ZZ baza)
 {
+	w = baza;
 	compute_DGHV_settings(lambda);
 	compute_FDGHV_settings();
 }
@@ -61,7 +62,7 @@ void Flat_DGHV::compute_DGHV_settings(int lambda)
 	UL gamma = pow(lambda, 4);
 	UL eta = lambda*lambda;
 	UL ro = lambda;
-    cout << "\n\nSECURITATE COMPROMISA pt ca tau = lambda, cf def tau = O(gamma+lambda)\n\n";
+    // cout << "\n\nSECURITATE COMPROMISA pt ca tau = lambda, cf def tau = O(gamma+lambda)\n\n";
     UL tau = lambda;
     // UL tau = gamma + lambda;
 	UL ro_prim = 2 * lambda;
@@ -79,18 +80,18 @@ void Flat_DGHV::compute_FDGHV_settings()
 	while (x_0 != 0)
 	{
 		l++;
-		x_0 = x_0 / 2;
+		x_0 = x_0 / w;
 	}
 	assert(l != 0);
 	l += 1;
 
 	v.reserve(l);			// v = Powersof2(1);
-	ZZ two(2);
-	ZZ pow_of_two(1);
+	ZZ two = w;
+	ZZ pow_of_w(1);
 	for (int i = 0; i < l; i++)
 	{
-		v.push_back(pow_of_two);
-		pow_of_two *= 2;
+		v.push_back(pow_of_w);
+		pow_of_w *= w;
 	}
 
 	C_prim.reserve(l);
@@ -110,9 +111,10 @@ ZZ	Flat_DGHV::encrypt_DGHV(int message)const
 	return encrypt_integer(pk_DGHV, ZZ(message));
 }
 
-int	Flat_DGHV::decrypt_DGHV(ZZ &ctxt)const
+ZZ	Flat_DGHV::decrypt_DGHV(ZZ &ctxt)const
 {
-	return ( ctxt % sk_DGHV % 2 );
+	// modifica schema DGHV => modulo t >> 2
+	return ctxt % sk_DGHV % w ;
 }
 
 Vec_ZZ Flat_DGHV::bitdecomp(Vec_ZZ &C_i)const
@@ -130,8 +132,8 @@ Vec_ZZ Flat_DGHV::bitdecomp(Vec_ZZ &C_i)const
 			elem = C_i[j];
 		}
 
-		C_decomp.push_back(ZZ(elem % 2));
-		elem = elem / 2;
+		C_decomp.push_back(ZZ(elem % w));
+		elem = elem / w;
 	}
 
 	return C_decomp;
@@ -143,19 +145,19 @@ Vec_ZZ Flat_DGHV::bitdecomp_1(Vec_ZZ &C_i)const
 	long length = C_i.size() / l;
 	C_decomp_1.reserve(length);
 
-	ZZ pow_of_two(1);
-	ZZ two(2);
+	ZZ pow_of_w(1);
+	// ZZ two(2);
 	for (LL i = 0, j = -1; i < C_i.size(); i++)
 	{
 		if (i % l == 0)
 		{
-			pow_of_two = 1;
+			pow_of_w = 1;
 			j++;
 			C_decomp_1.push_back(ZZ(0));		//C_decomp_1[j] = 0;
 		}
 
-		C_decomp_1[j] +=  C_i[i] * pow_of_two;
-		pow_of_two *= two;
+		C_decomp_1[j] +=  C_i[i] * pow_of_w;
+		pow_of_w *= w;
 	}
 
 	return C_decomp_1;
@@ -193,7 +195,7 @@ Mat_ZZ Flat_DGHV::encrypt(int message)const
 	return C;
 }
 
-int Flat_DGHV::decrypt(const Mat_ZZ &C)const
+ZZ Flat_DGHV::decrypt(const Mat_ZZ &C)const
 {
 	ZZ message(0);
 	for (int i = 0; i < l; i++)
@@ -271,7 +273,7 @@ Mat_ZZ Flat_DGHV::hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const
 		
 		for (int j = 0; j < l; j++)
 		{
-			elem += C2[i][j] * C1_prim[j][0];
+			elem += C2[i][j] * C1_prim[j][0] ;
 		}
 
 		Vec_ZZ linie;
@@ -279,8 +281,9 @@ Mat_ZZ Flat_DGHV::hom_mult_opt(Mat_ZZ &C1, Mat_ZZ &C2)const
         C_mult[i] = bitdecomp(linie);;
 	}
 
-	return (C_mult);
+	return flatten(C_mult);
 }
+
 
 
 /*****************				OMP						*******/
@@ -431,7 +434,12 @@ int Flat_DGHV::omp_decrypt(Mat_ZZ &C)const
 		message += C[0][i] * v[i];
 	}
 
-	return decrypt_DGHV(message);
+	// return decrypt_DGHV(message);
+    
+    const ZZ miu = decrypt_DGHV(message);
+    int val;
+    conv(val, miu);
+    return val;
 
 #else
 	return decrypt(C);
