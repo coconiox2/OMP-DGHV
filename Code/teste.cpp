@@ -1,6 +1,475 @@
 #include "teste.h"
 #include <fstream>
 #include <ctime>
+#include "Flat_CNT.h"
+
+class MyTimer
+{
+    clock_t begin;
+    clock_t end;
+public:
+    void start_timer()
+    {
+        begin = clock();
+    }
+    
+    double stop_timer()
+    {
+        end = clock();
+        return double(end - begin) / CLOCKS_PER_SEC;
+    }
+};
+
+void test_flat_CNT()
+{
+    MyTimer timer;
+    
+    Flat_CNT flat_cnt(42);
+    
+    /*cout << "Se testeaza criptarea ..." << endl;
+    for(int i=0; i<100; i++)
+    {
+        int m = rand() % 2;
+        
+        Mat_uint32 ctxt = flat_cnt.encrypt(m);
+        
+        ZZ miu = flat_cnt.decrypt(ctxt);
+        
+        if( miu != ZZ(m) )
+        {
+            cout << "m = " << m << " miu = " << miu << endl;
+            cout << "Eroare la criptare/decriptare." << endl;
+            break;
+        }
+        else
+        {
+            cout << "iteratia i = " << i << " : SUCCES." << endl;
+        }
+    }*/
+    
+    cout << "Se testeaza adancimea maxima multiplicativa ..." << endl;
+    int depth = 0;
+    int miu = 0;
+    cout << "Se cripteaza unu ..." << endl;
+    timer.start_timer();
+    Mat_uint32 C = flat_cnt.encrypt(1);
+    double elapsed_time = timer.stop_timer();
+    cout << "Criptare terminata." << endl;
+    cout << "Timp criptare intreg = " << elapsed_time << " s" << endl;
+     
+    timer.start_timer();
+    do
+    {
+        C = flat_cnt.hom_mult_opt(C, C);
+        conv(miu, flat_cnt.decrypt(C));
+        if( miu == 1 )
+        {
+            depth++;
+            cout << depth << endl;
+        }
+        else
+        {
+            cout << "Max depth = " << depth << endl;
+            break;
+        }
+        
+    }while( miu == 1);
+    cout << "Timp inmultiri = " << timer.stop_timer() << " s" << endl << endl;
+    
+    cout << "Final test Flat_CNT." << endl;
+}
+
+
+void test_CNT()
+{
+    ofstream out;
+    out.open ("Data/cnt_fhe.txt", std::ofstream::out | std::ofstream::app);
+    
+    MyTimer timer;
+    double elapsed_time = 0.0;
+    
+	int lambda[] = { 62, 52, 42, 72 };
+	int ro[] = { 32, 24, 16, 39 };
+	int eta[] = { 2176, 1632, 1088, 2652 };
+	int gamma[] = { 4200000, 860000, 160000, 19000000 };
+	int tau[] = { 44 , 23, 12, 88 }; // pt CNT_quadratic tau = beta
+	// int alpha[] = { 1106, 1476, 2016, 2556 };
+
+	for (int j = 0; j < 10; j++)
+	{
+        /*int i = 0;
+		int l = lambda[i]; // out << "lambda = " << l << endl;
+		int r = ro[i]; // out << "ro = " << r << endl;
+		int e = eta[i]; // out << "eta = " << e << endl;
+		int g = gamma[i]; // out << "gamma = " << g << endl;
+		int t = tau[i]; // out << "tau = " << t << endl;
+		int a = (g+6)/(t*t); // out << "alpha = " << l << endl; // alpha * beta^2 >= gama + w(log lambda)
+        int rp = r*10 + a + 5; // out << "ro_prim = " << rp << endl;*/
+        
+        /*int l = 32;
+        int r = l;
+        int e = (int)pow(l, 2);
+        int g = (int)pow(l, 5);
+        int b = l*l;
+        int a = l; 
+        int rp = 4*l;*/
+        
+         
+    int l = 42;
+	int r = 16;
+	int e = 1088;
+	int g = 160000;
+	int b = 12;
+	int a = 1000; // alpha * beta^2 >= gama + w(log lambda)
+    int rp = 4*l;
+
+		// cout << "Se creeaza contextul homomorfic ..." << endl;
+		CNT_FHE he(l, r, rp, e, g, b, a);
+		// cout << "Context creat" << endl;
+
+		ZZ sk;
+		vector<ZZ> pk;
+
+		cout << "Se genereaza cheile ..." << endl;
+		// he.generate_keys(sk, pk);
+        he.quadratic_key_generation(sk, pk);
+		cout << "Chei generate." << endl;
+        
+        out << "size_SK = " << NumBytes(sk) << " octeti" << endl;
+        out << "size_x_0 = " << NumBytes(pk[0]) << " octeti" << endl;
+
+		cout << "Se testeaza primitiva de criptare a schemei ..." << endl;
+        bool ok = true;
+		srand(time(NULL));
+		for (int i = 0; i < 20; i++)
+		{
+			int m = rand() % 2;
+			ZZ ctxt(-999);
+			// cout << "Se cripteaza mesajul." << endl;
+			he.encrypt(pk, m, ctxt);
+			// cout << "Mesaj criptat." << endl;
+
+			int miu = -999;
+
+			he.decrypt(sk, miu, ctxt);
+
+			if (miu != m)
+			{
+				cout << "Eroare la criptare/decriptare." << endl;
+				cout << "m = " << m << "\t miu = " << miu << endl;
+                ok = false;
+                break;
+			}
+		}
+        
+        if( ok == true )
+        {
+            cout<<"Criptarea : SUCCES." << endl;
+        }
+        
+        ZZ enc_of_1;
+        int unu = 1;
+        // he.encrypt(pk, unu, enc_of_1);
+        cout << "Se cripteaza 1 ..." << endl;
+        timer.start_timer();
+        he.quadratic_encryption(pk, unu, enc_of_1);
+        elapsed_time = timer.stop_timer();
+        cout << "S-a criptat 1." << endl;
+        cout << "Timp criptare = " << elapsed_time << endl;
+        int miu = 0;
+        int depth = 0;
+        
+        cout << "Se testeaza operatiile homomorfice ..." << endl;
+        do
+        {
+            enc_of_1 = (enc_of_1 * enc_of_1) % pk[0]; // 1=1*1
+            he.decrypt(sk, miu, enc_of_1);
+            depth++;
+            if( depth % 10 == 0)
+            {
+                cout << "depth reached = " << depth << endl;
+            }
+            if( depth == 1000 )
+            {
+                break;
+            }
+        }while(miu == 1);
+        cout << "Mult depth = " << depth << endl;
+		cout << "*********************************************" << endl << endl;
+        
+        out << "Mult depth = " << depth << endl;
+		out << "*********************************************" << endl << endl;
+	}
+
+	cout << "Final test CNT_HE." << endl;
+	// cout << "Decrypted miu = " << miu << endl;
+
+	/*cout << "sizeof(SK) = " << NumBytes(sk) << endl << endl;
+	cout << "SK = " << sk << endl << endl;
+	cout << "sizeof(PK) = " << pk.size() << endl << endl;
+	cout << "sizeof(x_0) = " << NumBytes(pk[1]) << endl << endl;
+	cout << "x_0 = " << pk[1] << endl << endl;*/
+    
+    out.close();
+}
+
+void my_test()
+{
+    ofstream out("pkcomp.txt");
+	MyTimer timer;
+	double elapsed_time = 0.0;
+
+	baza = new ZZ(2);
+	int lambda = 128;
+	
+	Flat_DGHV he_engine(lambda, (*baza));
+
+	cout << "Se cripteaza intregul ..." << endl;
+	timer.start_timer();
+	Mat_ZZ C = he_engine.encrypt(1);
+	elapsed_time = timer.stop_timer();
+	
+	cout << "Timp criptare = " << elapsed_time << endl;
+    out << "Timp criptare intreg = " << elapsed_time << endl;
+
+	cout << "Se efectueaza inmultirile ..." << endl;
+	elapsed_time = 0.0;
+	timer.start_timer();
+	for (int i = 0; i < 100; i++)
+	{
+		he_engine.hom_mult_opt(C, C);
+	}
+	elapsed_time = timer.stop_timer();
+
+	cout << endl << "Timp 100 mults Flattening = " << elapsed_time << endl << endl;
+    out << endl << "Timp 100 mults Flattening = " << elapsed_time << endl << endl;
+
+
+	ZZ ctxt = he_engine.encrypt_DGHV(1);
+	elapsed_time = 0.0;
+
+	timer.start_timer();
+	for (int i = 0; i < 1000; i++)
+	{
+		ctxt*ctxt;
+	}
+	elapsed_time = timer.stop_timer();
+
+	cout << "Timp 1000 mults FHE over Ints = " << elapsed_time << endl << endl;
+    out << "Timp 1000 mults FHE over Ints = " << elapsed_time << endl << endl;
+    
+    out.close();
+}
+
+void test_FHE_over_Integers(int lambda, int w_baza)
+{
+    ofstream out;
+    out.open ("fhe_over_integers.txt", std::ofstream::out | std::ofstream::app);
+    
+    baza = new ZZ(w_baza);
+            
+    cout << "Se creeaza engine-ul homomorfic ..." << endl;
+    Flat_DGHV he_engine(lambda, (*baza));
+    cout << "Engine creat." << endl;
+    
+    int depth = -1;
+    
+    ZZ c = he_engine.encrypt_DGHV(1);
+    ZZ x_0 = he_engine.get_x_0();
+    
+    clock_t start = clock();
+    do
+    {
+        c = c*c;
+        c = c % x_0;
+        depth++;
+        if(depth % 10000 == 0)
+        {
+            cout << "+10 000" << endl;
+        }
+    }while(he_engine.decrypt_DGHV(c) == 1);
+    
+    clock_t end = clock();
+    
+    cout << "SEC = " << lambda << " BAZA = " << w_baza << endl;
+    cout << "HE DEPTH FHE over Integers = " << depth << endl;
+    cout << "Timp inmultiri = " << double(end - start) / CLOCKS_PER_SEC << endl;
+    
+    out << "SEC = " << lambda << " BAZA = " << w_baza << endl;
+    out << "HE DEPTH FHE over Integers = " << depth << endl;
+    out << "Timp inmultiri = " << double(end - start) / CLOCKS_PER_SEC << endl;
+    out <<"***************************************************" << endl << endl;
+    
+    delete baza;
+    baza = nullptr;
+    out.close();
+}
+
+void test_enc_dec(int lambda, int w_baza)
+// void test_enc_dec()
+{
+    ofstream out;
+    out.open ("time_enc_dec.txt", std::ofstream::out | std::ofstream::app);
+    
+    int decomp_base[] = { 2, 16, 128, 1024, 32678};
+    int security_bits[] = { 128, 192, 220};
+    
+    /*for(int i=0; i<5; i++)
+    {
+        int w_baza = decomp_base[i];
+        
+        for(int j=0; j<3; j++)
+        {
+            int lambda = security_bits[j];*/
+            baza = new ZZ(w_baza);
+            
+            cout << "Se creeaza engine-ul homomorfic ..." << endl;
+            clock_t t0 = clock();
+            Flat_DGHV he_engine(lambda, (*baza));
+            clock_t t1 = clock();
+            cout << "Engine creat." << endl;
+            
+            ZZ miu(-1);
+            
+            double timp_criptare = 0.0;
+            double timp_decriptare = 0.0;
+            cout << "Se masoara timpii de criptare/decriptare ..." << endl;
+            for(int k=0; k<1000; k++)
+            {
+                int m = rand() % w_baza;
+                
+                clock_t begin = clock();
+                Mat_ZZ C = he_engine.encrypt(m);
+                clock_t end = clock();
+
+                timp_criptare += double(end - begin) / CLOCKS_PER_SEC;
+                
+                clock_t begin1 = clock();
+                miu = he_engine.decrypt(C);
+                clock_t end1 = clock();
+                
+                if( miu != m )
+                {
+                    cout << " EROARE la criptare/decriptare." << endl;
+                    cout << " k = " << k << " ";
+                    cout << miu << " " << m << endl; 
+                }
+
+                timp_decriptare += double(end1 - begin1) / CLOCKS_PER_SEC;
+            }
+            
+            cout << "SEC = " << lambda << " Baza = " << w_baza << endl;
+            cout << "Timp creare engine homomorfic = " << double(t1 - t0) / CLOCKS_PER_SEC << endl;
+            cout << "Timp criptare la 1000 de elemente = " << timp_criptare << endl;
+            cout << "Timp decriptare la 1000 de elemente = " << timp_decriptare << endl;
+            cout << "*********************************************************" << endl << endl;
+            
+            out << "SEC = " << lambda << " Baza = " << w_baza << endl;
+            out << "Timp creare engine homomorfic = " << double(t1 - t0) / CLOCKS_PER_SEC << endl;
+            out << "Timp criptare la 1000 de elemente = " << timp_criptare << endl;
+            out << "Timp decriptare la 1000 de elemente = " << timp_decriptare<< endl;
+            out << "*********************************************************" << endl << endl;
+            
+            delete baza;
+            baza = nullptr;
+        // }
+    // }
+    
+    out.close();
+}
+
+void test_omp(int lambda, int w_baza)
+{
+    ofstream out("teste_omp.txt");
+
+	double elapsed_time = 0.0;
+
+	Mat_ZZ C1;
+	Mat_ZZ C2;
+	int m1;
+	int m2;
+
+	/*int decomp_base[] = { 2, 16, 128, 1024, 32678 };
+	int security[] = { 192, 220, 140 };
+	int w_baza = -1;
+	int lambda = -1;*/
+
+	// for (int i = 0; i < 5; i++)
+	// {
+		// w_baza = decomp_base[i];
+		baza = new ZZ(w_baza);
+
+		// for (int j = 0; j < 3; j++)
+		// {
+			// lambda = security[j];
+			
+			Flat_DGHV he_engine(lambda, (*baza));
+
+			cout << "SEC = " << lambda << " \t BAZA = " << w_baza << endl;
+			out << "SEC = " << lambda << " \t BAZA = " << w_baza << endl;
+
+			srand(time(NULL));
+
+			m1 = rand() % w_baza;
+			m2 = rand() % w_baza;
+
+			C1 = he_engine.encrypt(m1);
+			C2 = he_engine.encrypt(m2);
+
+			bool circuited_completed = true;
+			int circuit_size = 100;
+
+			for (int l = 0; l < 3; l++)
+			{
+				int mults = 0;
+				int adds = 0;
+				vector<int> circuit = compute_random_circuit(circuit_size);
+
+				clock_t begin = clock();
+				for (int k = 0; k < circuit_size; k++)
+				{
+					if (circuit[k] == 0)
+					{
+						C1 = he_engine.omp_hom_add(C1, C2);
+						m1 = (m1 + m2) % w_baza;
+						adds++;
+					}
+					else
+					{
+						// C1 = he_engine.hom_mult_opt(C1, C2);
+                        C1 = he_engine.omp_hom_mult(C1, C2);
+						m1 = (m1*m2) % w_baza;
+						mults++;
+					}
+
+					if (he_engine.decrypt(C1) != m1)
+					{
+						cout << "Eval depth = " << k << endl;
+						out << "Eval depth = " << k << endl;
+						circuited_completed = false;
+						break;
+					}
+					m2 = rand() % w_baza;
+					C2 = he_engine.encrypt(m2);
+				}
+                clock_t end = clock();
+                elapsed_time = double(end - begin) / CLOCKS_PER_SEC;
+				cout << "Time = " << elapsed_time << " s" << endl;
+				out << "Time = " << elapsed_time << " s" << endl;
+
+				cout << "Mults = " << mults << " Adds = " << adds << endl;
+				out << "Mults = " << mults << " Adds = " << adds << endl;
+				circuit_size *= 10;
+			}
+            
+            cout << "***********************************************************" << endl << endl;
+            out << "***********************************************************" << endl << endl;
+		// }
+	// }
+
+	out.close();
+    
+}
 
 void test_max_mult_depth()
 {
@@ -14,7 +483,7 @@ void test_max_mult_depth()
 	int m2;
 
 	int decomp_base[] = { 32678, 128, 1024, 8192, 2};
-	int security[] = { 112, 128, 140, 192 };
+	int security[] = { 128, 140, 192 };
 
 	int w_baza = -1;
 	int lambda = -1;
@@ -466,19 +935,17 @@ void test_max_no_encryptions()
 void test_max_func(int lambda, int no_bits, int N)
 {
     ofstream out;
-    out.open ("getmax.txt", std::ofstream::out | std::ofstream::app);
+    out.open ("bcryptsec.txt", std::ofstream::out | std::ofstream::app);
     
     /**** parametrii schemei pentru testare ****/
     t_bits = no_bits;
     int w_baza = 2;
                     
     cout<< endl;
-    cout<< "security_bits = " << lambda << endl;
-    cout<< "int_size = " << t_bits << endl;
-    cout<< "N = " << N << endl; 
-    cout<< "baza = " << w_baza << endl;
-    
-    double average_time = 0.0;
+    // cout<< "security_bits = " << lambda << endl;
+    // cout<< "int_size = " << t_bits << endl;
+    // cout<< "N = " << N << endl; 
+    // cout<< "baza = " << w_baza << endl;
                     
     baza = new ZZ(w_baza);
     cout << "Se creeaza contextul homomorfic ... " << endl;
@@ -493,17 +960,24 @@ void test_max_func(int lambda, int no_bits, int N)
     int max_val = (int)( pow(2, t_bits) - 1 );
     vector<int> values(N);
                 
+                
+    // cout << "Atentie !!! Valorile vectorului sunt toate 1." << endl;            
     srand(time(NULL));
     for(int i=0; i<N; i++)
     {
         values[i] = rand() % max_val;
+        // values[i] = 1;
     }
 
     try
     {
         cout << "Encrypting int vector ..." << endl;
+         clock_t senc = clock();
         hint.encryptIntVector(vvct, values);
-        cout << "vvct.size = " << vvct.size() << endl;
+        clock_t fenc = clock();
+        cout << "Timp criptare vector : " << (double)(fenc-senc)/CLOCKS_PER_SEC << endl;
+        out << "Timp decriptare vector : " << (double)(fenc-senc)/CLOCKS_PER_SEC << endl;
+        // cout << "vvct.size = " << vvct.size() << endl;
     }    
     catch (std::bad_alloc& ba)
     {
@@ -515,25 +989,45 @@ void test_max_func(int lambda, int no_bits, int N)
     }
                     
     vector<Mat_ZZ> max; // = getmax(vvct, 0, vvct.size() );
-    clock_t tStart = clock();
-    try
-    {
-        cout << "A intrat in getmax." << endl;
-        max = getmax(vvct, 0, vvct.size() );
-        cout << "A iesit din getmax." << endl;
-    }    
-    catch (std::bad_alloc& ba)
-    {
-        std::cerr << "bad_alloc getmax caught: " << ba.what() << '\n';
-    }
-    cout << "Timp homomorphic : " << (double)(clock()-tStart)/CLOCKS_PER_SEC << endl;
-
+    clock_t tStart = clock();                
+    // for(int i=0; i<10; i++)
+    // {   
+        try
+        {
+            // cout << "A intrat in getmax." << endl;
+            max = getmax(vvct, 0, vvct.size() );
+            // cout << "A iesit din getmax." << endl;
+            // cout << "hom_max = " << hint.decryptIntValue(max) << endl << endl;
+            
+            // cout << "Cream un nou vector ..." << endl;
+            /*for(int j=0; j<vvct.size(); j++)
+            {
+                for(int k=0; k<vvct[j].size(); k++)
+                {
+                    vvct[j][k] = HE_Context->hom_mult_opt(vvct[j][k], max[k]);
+                }
+            }*/
+            // cout << "vector creat." << endl;
+        }    
+        catch (std::bad_alloc& ba)
+        {
+            std::cerr << "bad_alloc getmax caught: " << ba.what() << '\n';
+        }
+    // }
+    clock_t end = clock();
+    cout << "Timp hom max : " << (double)(end-tStart)/CLOCKS_PER_SEC << endl;
     out<< "security_bits = " << lambda << endl;
+    
+    out << "eta = " << Params::getEta() << endl;
+	out << "ro = " << Params::getRo() << endl;
+    out << "ro_prim = " << Params::getRoPrim() << endl;
+    out << "gamma = " << Params::getGamma() << endl;
+	out << "tau = " << Params::getTau() << endl << endl;
+    
     out<< "int_size = " << t_bits << endl;
     out<< "N = " << N << endl; 
     out<< "baza = " << w_baza << endl;
-    out << "Timp homomorphic : " << (double)(clock()-tStart)/CLOCKS_PER_SEC << endl;
-    average_time += (double)(clock()-tStart)/CLOCKS_PER_SEC;
+    out << "Timp hom max : " << (double)(end-tStart)/CLOCKS_PER_SEC << " s" << endl << endl;
                     
     int plain_max = gmax(values, 0, values.size());
     cout << "plain_max = " << plain_max << endl;
